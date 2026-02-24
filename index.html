@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CUERPOS ARQ — Estudio de Arquitectura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --cream: #F5F0EB;
+      --cream-dark: #EBE4DC;
+      --warm-white: #FAF8F5;
+      --sand: #E8E0D6;
+      --text: #1A1816;
+      --text-secondary: #5C5650;
+      --text-light: #908880;
+      --accent: #9C8878;
+      --border: #DDD5CB;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--warm-white);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1.25rem 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(250,248,245,0.92);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.4s, padding 0.4s;
+    }
+    nav.scrolled { border-bottom-color: var(--border); padding: 1rem 3rem; }
+
+    .logo {
+      font-family: 'Inter', sans-serif;
+      font-weight: 500; font-size: 0.8rem;
+      letter-spacing: 0.4em; text-transform: uppercase;
+      text-decoration: none; color: var(--text);
+    }
+    .logo span { font-weight: 300; color: var(--text-light); margin-left: 0.15em; }
+
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+      text-decoration: none; color: var(--text-secondary);
+      transition: color 0.3s; font-weight: 400;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px; background: var(--accent);
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .menu-toggle span { display: block; width: 22px; height: 1.5px; background: var(--text); margin: 5px 0; transition: all 0.3s; }
+
+    /* ── HERO ── */
+    .hero {
+      height: 100vh; position: relative;
+      display: flex; align-items: flex-end;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=85') center/cover no-repeat;
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(26,24,22,0.7) 0%, rgba(26,24,22,0.15) 50%, rgba(26,24,22,0.05) 100%);
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 0 4rem 5rem;
+      max-width: 800px;
+    }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300; font-size: clamp(3.5rem, 8vw, 6.5rem);
+      color: #fff; line-height: 1.0; letter-spacing: -0.02em;
+    }
+    .hero h1 em { font-style: italic; font-weight: 300; }
+    .hero-sub {
+      margin-top: 1.5rem;
+      font-size: 0.78rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(255,255,255,0.6); font-weight: 300;
+    }
+    .hero-scroll-indicator {
+      position: absolute; bottom: 2.5rem; right: 4rem; z-index: 2;
+      display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+    }
+    .hero-scroll-indicator span {
+      font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(255,255,255,0.4); writing-mode: vertical-rl;
+    }
+    .hero-scroll-indicator::after {
+      content: ''; width: 1px; height: 50px;
+      background: rgba(255,255,255,0.25);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 0.2; transform: scaleY(0.6); }
+      50% { opacity: 1; transform: scaleY(1); }
+    }
+
+    /* ── SHARED ── */
+    .container { max-width: 1200px; margin: 0 auto; }
+    section { padding: 7rem 4rem; }
+
+    .section-label {
+      font-size: 0.68rem; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--text-light); font-weight: 400; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .section-label::before {
+      content: ''; width: 28px; height: 1px; background: var(--border);
+    }
+    .section-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.9rem; color: var(--border); font-weight: 300;
+      margin-right: 0.5rem;
+    }
+
+    /* ── ESTUDIO ── */
+    .estudio { background: var(--warm-white); }
+    .estudio-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; align-items: center; margin-top: 3rem;
+    }
+    .estudio-img {
+      width: 100%; aspect-ratio: 3/4; object-fit: cover;
+    }
+    .estudio-text h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300; font-size: clamp(2rem, 3.5vw, 2.8rem);
+      line-height: 1.3; margin-bottom: 2rem;
+    }
+    .estudio-text h2 em { font-style: italic; color: var(--accent); }
+    .estudio-text p {
+      font-size: 0.92rem; color: var(--text-secondary);
+      line-height: 1.85; margin-bottom: 1.2rem;
+    }
+
+    /* ── QUIENES SOMOS ── */
+    .equipo { background: var(--cream); }
+    .equipo-header {
+      text-align: center; margin-bottom: 4rem;
+    }
+    .equipo-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300; font-size: clamp(2rem, 4vw, 3rem);
+      margin-top: 0.5rem;
+    }
+    .equipo-header h2 em { font-style: italic; color: var(--accent); }
+
+    .equipo-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem; max-width: 1000px; margin: 0 auto;
+    }
+    .equipo-member { text-align: center; }
+    .equipo-member .member-photo {
+      width: 100%; aspect-ratio: 3/4; object-fit: cover;
+      filter: grayscale(20%);
+      transition: filter 0.5s, transform 0.5s;
+    }
+    .equipo-member:hover .member-photo {
+      filter: grayscale(0%); transform: scale(1.02);
+    }
+    .equipo-member .member-photo-wrap {
+      overflow: hidden; margin-bottom: 1.5rem;
+    }
+    .member-placeholder {
+      width: 100%; aspect-ratio: 3/4;
+      background: var(--cream-dark);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 1rem;
+      border: 2px dashed var(--border);
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .equipo-member:hover .member-placeholder {
+      background: var(--sand); border-color: var(--accent);
+    }
+    .member-placeholder svg {
+      width: 36px; height: 36px; stroke: var(--text-light);
+      transition: stroke 0.3s;
+    }
+    .equipo-member:hover .member-placeholder svg { stroke: var(--accent); }
+    .member-placeholder span {
+      font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--text-light); transition: color 0.3s;
+    }
+    .equipo-member:hover .member-placeholder span { color: var(--accent); }
+    .equipo-member h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400; font-size: 1.35rem; margin-bottom: 0.3rem;
+    }
+    .equipo-member .member-role {
+      font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--text-light);
+    }
+
+    /* ── FILOSOFIA ── */
+    .filosofia { background: var(--warm-white); }
+    .filosofia-intro {
+      max-width: 700px; margin-bottom: 4rem;
+    }
+    .filosofia-intro h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300; font-size: clamp(2rem, 3.5vw, 2.8rem);
+      line-height: 1.3; margin-top: 0.5rem;
+    }
+    .filosofia-intro h2 em { font-style: italic; color: var(--accent); }
+
+    .filosofia-cols {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+    }
+    .filosofia-col { border-top: 1px solid var(--border); padding-top: 2rem; }
+    .filosofia-col .num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; color: var(--border); font-weight: 300;
+      line-height: 1; margin-bottom: 1.2rem;
+    }
+    .filosofia-col h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400; font-size: 1.4rem; margin-bottom: 0.8rem;
+    }
+    .filosofia-col p {
+      font-size: 0.88rem; color: var(--text-secondary); line-height: 1.75;
+    }
+
+    /* ── PROJECTS ── */
+    .proyectos { background: var(--cream); }
+    .proyectos-header {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 3.5rem;
+    }
+    .proyectos-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300; font-size: clamp(2rem, 4vw, 3rem);
+      margin-top: 0.5rem;
+    }
+    .proyectos-header h2 em { font-style: italic; color: var(--accent); }
+    .proyectos-header .ver-mas {
+      font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--text-secondary); text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.25rem; transition: all 0.3s;
+    }
+    .proyectos-header .ver-mas:hover { color: var(--text); border-color: var(--text); }
+
+    .proyectos-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      grid-template-rows: auto auto;
+      gap: 1.5rem;
+    }
+    .proyecto-card {
+      position: relative; overflow: hidden; cursor: pointer;
+    }
+    .proyecto-card img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.7s ease;
+    }
+    .proyecto-card:hover img { transform: scale(1.05); }
+
+    .proyecto-card .proyecto-info {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 2rem;
+      background: linear-gradient(to top, rgba(26,24,22,0.65) 0%, transparent 100%);
+      transform: translateY(10px); opacity: 0;
+      transition: all 0.4s ease;
+    }
+    .proyecto-card:hover .proyecto-info { transform: translateY(0); opacity: 1; }
+    .proyecto-info .tag {
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(255,255,255,0.6); margin-bottom: 0.3rem;
+    }
+    .proyecto-info h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400; font-size: 1.3rem; color: #fff;
+    }
+
+    .proyecto-card:nth-child(1) { grid-row: 1 / 3; aspect-ratio: auto; }
+    .proyecto-card:nth-child(2),
+    .proyecto-card:nth-child(3) { aspect-ratio: 4/3; }
+
+    .proyectos-row2 {
+      display: grid; grid-template-columns: 0.8fr 1.2fr;
+      gap: 1.5rem; margin-top: 1.5rem;
+    }
+    .proyectos-row2 .proyecto-card { aspect-ratio: 4/3; }
+
+    /* ── INSTAGRAM ── */
+    .instagram-section {
+      background: var(--warm-white);
+      text-align: center;
+    }
+    .instagram-section h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300; font-size: clamp(1.8rem, 3vw, 2.5rem);
+      margin-top: 0.5rem; margin-bottom: 1rem;
+    }
+    .instagram-section h2 em { font-style: italic; color: var(--accent); }
+    .instagram-section > p {
+      font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 3rem;
+    }
+
+    .ig-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem; max-width: 1200px; margin: 0 auto 3rem;
+    }
+    .ig-grid a {
+      display: block; aspect-ratio: 1; overflow: hidden; position: relative;
+    }
+    .ig-grid img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.5s;
+    }
+    .ig-grid a:hover img { transform: scale(1.08); }
+    .ig-grid a::after {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(26,24,22,0); transition: background 0.3s;
+    }
+    .ig-grid a:hover::after { background: rgba(26,24,22,0.15); }
+
+    .ig-follow {
+      display: inline-flex; align-items: center; gap: 0.75rem;
+      padding: 0.9rem 2.5rem;
+      border: 1px solid var(--text); text-decoration: none;
+      font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--text); transition: all 0.3s;
+    }
+    .ig-follow svg { width: 18px; height: 18px; }
+    .ig-follow:hover { background: var(--text); color: var(--warm-white); }
+    .ig-follow:hover svg { stroke: var(--warm-white); }
+
+    /* ── CTA ── */
+    .cta {
+      position: relative; overflow: hidden;
+      background: var(--text);
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; min-height: 500px;
+    }
+    .cta-bg {
+      position: absolute; inset: 0;
+      background: url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1400&q=80') center/cover no-repeat;
+      opacity: 0.25;
+    }
+    .cta-content { position: relative; z-index: 2; padding: 2rem; }
+    .cta h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300; font-size: clamp(2.5rem, 5vw, 4rem);
+      color: #fff; line-height: 1.15; margin-bottom: 1.5rem;
+    }
+    .cta h2 em { font-style: italic; color: var(--accent); }
+    .cta p {
+      font-size: 0.92rem; color: rgba(255,255,255,0.5);
+      max-width: 450px; margin: 0 auto 2.5rem;
+    }
+    .cta-btn {
+      display: inline-block; padding: 1rem 3rem;
+      border: 1px solid var(--accent); color: #fff;
+      text-decoration: none; font-size: 0.78rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      transition: all 0.3s;
+    }
+    .cta-btn:hover { background: var(--accent); }
+
+    /* ── CONTACT ── */
+    .contacto { background: var(--cream); }
+    .contacto-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; margin-top: 3rem;
+    }
+    .contacto-info h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300; font-size: 2.2rem;
+      margin-bottom: 2.5rem;
+    }
+    .contacto-info h2 em { font-style: italic; color: var(--accent); }
+    .info-item { margin-bottom: 1.8rem; }
+    .info-item label {
+      display: block; font-size: 0.68rem; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--text-light); margin-bottom: 0.4rem;
+    }
+    .info-item a, .info-item p {
+      font-size: 0.95rem; color: var(--text-secondary);
+      text-decoration: none; transition: color 0.3s;
+    }
+    .info-item a:hover { color: var(--text); }
+
+    .contacto-form { display: flex; flex-direction: column; gap: 1.8rem; padding-top: 0.5rem; }
+    .form-field label {
+      display: block; font-size: 0.68rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--text-light); margin-bottom: 0.6rem;
+    }
+    .form-field input, .form-field textarea {
+      width: 100%; font-family: 'Inter', sans-serif;
+      font-size: 0.92rem; padding: 0.7rem 0;
+      border: none; border-bottom: 1px solid var(--border);
+      background: transparent; color: var(--text); outline: none;
+      transition: border-color 0.3s;
+    }
+    .form-field input:focus, .form-field textarea:focus {
+      border-bottom-color: var(--accent);
+    }
+    .form-field textarea { resize: vertical; min-height: 80px; }
+
+    .submit-btn {
+      align-self: flex-start;
+      padding: 0.9rem 2.8rem; border: 1px solid var(--text);
+      background: transparent; color: var(--text);
+      font-family: 'Inter', sans-serif; font-size: 0.75rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      cursor: pointer; transition: all 0.3s;
+    }
+    .submit-btn:hover { background: var(--text); color: var(--cream); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--text); color: rgba(255,255,255,0.4);
+      padding: 3rem 4rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    footer .footer-logo {
+      font-family: 'Inter', sans-serif; font-weight: 500;
+      font-size: 0.78rem; letter-spacing: 0.35em; text-transform: uppercase;
+      color: rgba(255,255,255,0.7); text-decoration: none;
+    }
+    footer .footer-logo span { font-weight: 300; color: rgba(255,255,255,0.35); }
+    footer p { font-size: 0.72rem; letter-spacing: 0.05em; }
+    .footer-social { display: flex; gap: 1.5rem; }
+    .footer-social a { color: rgba(255,255,255,0.4); transition: color 0.3s; }
+    .footer-social a:hover { color: rgba(255,255,255,0.8); }
+    .footer-social svg { width: 18px; height: 18px; }
+
+    /* ── ANIMATIONS ── */
+    .reveal {
+      opacity: 0; transform: translateY(40px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.15s; }
+    .reveal-delay-2 { transition-delay: 0.3s; }
+    .reveal-delay-3 { transition-delay: 0.45s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      section { padding: 5rem 1.5rem; }
+      nav { padding: 1.1rem 1.5rem; }
+      .hero-content { padding: 0 2rem 3.5rem; }
+      .hero-scroll-indicator { right: 2rem; }
+
+      .nav-links {
+        display: none; position: fixed; inset: 0;
+        background: var(--warm-white);
+        flex-direction: column; align-items: center; justify-content: center;
+        gap: 2rem; z-index: 99;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a { font-size: 0.95rem; }
+      .menu-toggle { display: block; z-index: 101; }
+      .menu-toggle.open span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
+      .menu-toggle.open span:nth-child(2) { opacity: 0; }
+      .menu-toggle.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+
+      .estudio-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .equipo-grid { grid-template-columns: 1fr; max-width: 350px; gap: 3rem; }
+      .filosofia-cols { grid-template-columns: 1fr; gap: 0; }
+      .proyectos-grid { grid-template-columns: 1fr; }
+      .proyecto-card:nth-child(1) { grid-row: auto; aspect-ratio: 4/3; }
+      .proyectos-row2 { grid-template-columns: 1fr; }
+      .proyecto-card .proyecto-info { opacity: 1; transform: translateY(0); }
+      .ig-grid { grid-template-columns: repeat(2, 1fr); }
+      .contacto-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .proyectos-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2.5rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="#" class="logo">Cuerpos<span>Arq</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#estudio" onclick="closeMenu()">Estudio</a></li>
+      <li><a href="#equipo" onclick="closeMenu()">Equipo</a></li>
+      <li><a href="#proyectos" onclick="closeMenu()">Proyectos</a></li>
+      <li><a href="#servicios" onclick="closeMenu()">Servicios</a></li>
+      <li><a href="#contacto" onclick="closeMenu()">Contacto</a></li>
+    </ul>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1>Cuerpos<br><em>Arq</em></h1>
+      <p class="hero-sub">Estudio de Arquitectura</p>
+    </div>
+    <div class="hero-scroll-indicator">
+      <span>scroll</span>
+    </div>
+  </section>
+
+  <!-- ESTUDIO -->
+  <section class="estudio" id="estudio">
+    <div class="container">
+      <div class="section-label reveal"><span class="section-number">01</span> Estudio</div>
+      <div class="estudio-grid">
+        <img
+          class="estudio-img reveal"
+          src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&q=80"
+          alt="Interior de arquitectura — Cuerpos Arq"
+          loading="lazy"
+        >
+        <div class="estudio-text">
+          <h2 class="reveal">Creemos en una arquitectura que nace del <em>cuerpo</em> y dialoga con el <em>espacio</em></h2>
+          <p class="reveal reveal-delay-1">
+            Somos un estudio joven con una mirada sensible hacia el habitar contemporáneo. Cada proyecto comienza con una escucha atenta: entender cómo se vive, cómo se siente, cómo la luz entra y los materiales respiran.
+          </p>
+          <p class="reveal reveal-delay-2">
+            Trabajamos desde la escala del detalle hasta la del territorio, con el compromiso de crear espacios honestos, funcionales y con identidad propia. Arquitectura que se habita, no que se impone.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EQUIPO -->
+  <section class="equipo" id="equipo">
+    <div class="container">
+      <div class="equipo-header">
+        <div class="section-label reveal" style="justify-content:center"><span class="section-number">02</span> Equipo</div>
+        <h2 class="reveal">Quiénes <em>somos</em></h2>
+      </div>
+      <div class="equipo-grid">
+        <div class="equipo-member reveal">
+          <div class="member-photo-wrap">
+            <!-- Reemplazar con: <img class="member-photo" src="ruta-foto-julieta.jpg" alt="Julieta Crespo"> -->
+            <div class="member-placeholder">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0"/></svg>
+              <span>Agregar foto</span>
+            </div>
+          </div>
+          <h3>Julieta Crespo</h3>
+          <p class="member-role">Arquitecta / Socia Fundadora</p>
+        </div>
+        <div class="equipo-member reveal reveal-delay-1">
+          <div class="member-photo-wrap">
+            <!-- Reemplazar con: <img class="member-photo" src="ruta-foto-juana.jpg" alt="Juana Cichini"> -->
+            <div class="member-placeholder">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0"/></svg>
+              <span>Agregar foto</span>
+            </div>
+          </div>
+          <h3>Juana Cichini</h3>
+          <p class="member-role">Arquitecta / Socia Fundadora</p>
+        </div>
+        <div class="equipo-member reveal reveal-delay-2">
+          <div class="member-photo-wrap">
+            <!-- Reemplazar con: <img class="member-photo" src="ruta-foto-sol.jpg" alt="Sol Alvarez"> -->
+            <div class="member-placeholder">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0"/></svg>
+              <span>Agregar foto</span>
+            </div>
+          </div>
+          <h3>Sol Alvarez</h3>
+          <p class="member-role">Arquitecta / Socia Fundadora</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILOSOFIA -->
+  <section class="filosofia" id="filosofia">
+    <div class="container">
+      <div class="filosofia-intro">
+        <div class="section-label reveal"><span class="section-number">03</span> Filosofía</div>
+        <h2 class="reveal">Diseñamos desde la <em>escucha</em>, construimos con <em>sentido</em></h2>
+      </div>
+      <div class="filosofia-cols">
+        <div class="filosofia-col reveal">
+          <div class="num">01</div>
+          <h3>Escuchar</h3>
+          <p>Cada proyecto comienza con una conversación. Entendemos las necesidades, los deseos y las formas de habitar de cada cliente antes de trazar la primera línea.</p>
+        </div>
+        <div class="filosofia-col reveal reveal-delay-1">
+          <div class="num">02</div>
+          <h3>Materialidad</h3>
+          <p>Elegimos materiales honestos que envejecen con dignidad y dialogan con su entorno. La materia define la experiencia sensible del espacio.</p>
+        </div>
+        <div class="filosofia-col reveal reveal-delay-2">
+          <div class="num">03</div>
+          <h3>Contexto</h3>
+          <p>No diseñamos objetos aislados. Cada proyecto responde a su lugar, su clima, su luz y su cultura. El contexto es siempre el punto de partida.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROYECTOS -->
+  <section class="proyectos" id="proyectos">
+    <div class="container">
+      <div class="proyectos-header">
+        <div>
+          <div class="section-label reveal"><span class="section-number">04</span> Proyectos</div>
+          <h2 class="reveal">Trabajos <em>seleccionados</em></h2>
+        </div>
+        <a href="https://www.instagram.com/cuerposarq/" target="_blank" rel="noopener" class="ver-mas reveal">Ver todos en Instagram &rarr;</a>
+      </div>
+
+      <div class="proyectos-grid">
+        <div class="proyecto-card reveal">
+          <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900&q=80" alt="Casa Serrana" loading="lazy">
+          <div class="proyecto-info">
+            <p class="tag">Residencial</p>
+            <h3>Casa Serrana</h3>
+          </div>
+        </div>
+        <div class="proyecto-card reveal reveal-delay-1">
+          <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=700&q=80" alt="Loft Palermo" loading="lazy">
+          <div class="proyecto-info">
+            <p class="tag">Interiorismo</p>
+            <h3>Loft Palermo</h3>
+          </div>
+        </div>
+        <div class="proyecto-card reveal reveal-delay-2">
+          <img src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=700&q=80" alt="Espacio Cultural Río" loading="lazy">
+          <div class="proyecto-info">
+            <p class="tag">Comercial</p>
+            <h3>Espacio Cultural Río</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="proyectos-row2">
+        <div class="proyecto-card reveal">
+          <img src="https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=700&q=80" alt="Casa Bosque" loading="lazy">
+          <div class="proyecto-info">
+            <p class="tag">Residencial</p>
+            <h3>Casa Bosque</h3>
+          </div>
+        </div>
+        <div class="proyecto-card reveal reveal-delay-1">
+          <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=900&q=80" alt="Estudio 88" loading="lazy">
+          <div class="proyecto-info">
+            <p class="tag">Reforma</p>
+            <h3>Estudio 88</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICIOS -->
+  <section class="estudio" id="servicios">
+    <div class="container">
+      <div class="section-label reveal"><span class="section-number">05</span> Servicios</div>
+      <div class="estudio-grid" style="margin-top:2rem">
+        <div>
+          <h2 class="estudio-text reveal" style="font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(2rem,3.5vw,2.8rem);line-height:1.3">
+            Lo que <em style="font-style:italic;color:var(--accent)">hacemos</em>
+          </h2>
+        </div>
+        <div>
+          <div style="border-top:1px solid var(--border);padding:1.5rem 0;display:flex;justify-content:space-between;align-items:center" class="reveal">
+            <span style="font-family:'Cormorant Garamond',serif;font-size:1.25rem">Arquitectura Residencial</span>
+            <span style="font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-light)">Viviendas</span>
+          </div>
+          <div style="border-top:1px solid var(--border);padding:1.5rem 0;display:flex;justify-content:space-between;align-items:center" class="reveal reveal-delay-1">
+            <span style="font-family:'Cormorant Garamond',serif;font-size:1.25rem">Arquitectura Comercial</span>
+            <span style="font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-light)">Locales & Oficinas</span>
+          </div>
+          <div style="border-top:1px solid var(--border);padding:1.5rem 0;display:flex;justify-content:space-between;align-items:center" class="reveal reveal-delay-1">
+            <span style="font-family:'Cormorant Garamond',serif;font-size:1.25rem">Diseño de Interiores</span>
+            <span style="font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-light)">Espacios</span>
+          </div>
+          <div style="border-top:1px solid var(--border);padding:1.5rem 0;display:flex;justify-content:space-between;align-items:center" class="reveal reveal-delay-2">
+            <span style="font-family:'Cormorant Garamond',serif;font-size:1.25rem">Remodelaciones</span>
+            <span style="font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-light)">Reforma & Ampliación</span>
+          </div>
+          <div style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1.5rem 0;display:flex;justify-content:space-between;align-items:center" class="reveal reveal-delay-2">
+            <span style="font-family:'Cormorant Garamond',serif;font-size:1.25rem">Dirección de Obra</span>
+            <span style="font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-light)">Gestión</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTAGRAM -->
+  <section class="instagram-section">
+    <div class="container">
+      <div class="section-label reveal" style="justify-content:center"><span class="section-number">06</span> Instagram</div>
+      <h2 class="reveal">Seguinos en <em>@cuerposarq</em></h2>
+      <p class="reveal">Nuestro proceso, nuestras obras, nuestra mirada.</p>
+      <div class="ig-grid">
+        <a href="https://www.instagram.com/cuerposarq/" target="_blank" rel="noopener">
+          <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=400&q=80" alt="Post Instagram" loading="lazy">
+        </a>
+        <a href="https://www.instagram.com/cuerposarq/" target="_blank" rel="noopener">
+          <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&q=80" alt="Post Instagram" loading="lazy">
+        </a>
+        <a href="https://www.instagram.com/cuerposarq/" target="_blank" rel="noopener">
+          <img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=400&q=80" alt="Post Instagram" loading="lazy">
+        </a>
+        <a href="https://www.instagram.com/cuerposarq/" target="_blank" rel="noopener">
+          <img src="https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=400&q=80" alt="Post Instagram" loading="lazy">
+        </a>
+      </div>
+      <a href="https://www.instagram.com/cuerposarq/" target="_blank" rel="noopener" class="ig-follow reveal">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+        </svg>
+        @cuerposarq
+      </a>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="cta-bg"></div>
+    <div class="cta-content">
+      <h2>Pensemos juntos<br>tu próximo <em>espacio</em></h2>
+      <p>Nos encanta conocer nuevos proyectos. Contanos tu idea y empecemos a darle forma.</p>
+      <a href="#contacto" class="cta-btn">Escribinos</a>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section class="contacto" id="contacto">
+    <div class="container">
+      <div class="section-label reveal"><span class="section-number">07</span> Contacto</div>
+      <div class="contacto-grid">
+        <div class="contacto-info reveal">
+          <h2>Hablemos de tu <em>proyecto</em></h2>
+          <div class="info-item">
+            <label>Email</label>
+            <a href="mailto:hola@cuerposarq.com">hola@cuerposarq.com</a>
+          </div>
+          <div class="info-item">
+            <label>Instagram</label>
+            <a href="https://www.instagram.com/cuerposarq/" target="_blank" rel="noopener">@cuerposarq</a>
+          </div>
+          <div class="info-item">
+            <label>Ubicación</label>
+            <p>Argentina</p>
+          </div>
+        </div>
+        <form class="contacto-form reveal reveal-delay-1" onsubmit="event.preventDefault()">
+          <div class="form-field">
+            <label for="name">Nombre</label>
+            <input type="text" id="name" name="name" required autocomplete="name">
+          </div>
+          <div class="form-field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required autocomplete="email">
+          </div>
+          <div class="form-field">
+            <label for="message">Contanos sobre tu proyecto</label>
+            <textarea id="message" name="message" rows="4" required></textarea>
+          </div>
+          <button type="submit" class="submit-btn">Enviar mensaje</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <a href="#" class="footer-logo">Cuerpos<span>Arq</span></a>
+    <p>&copy; 2025 Cuerpos Arq — Estudio de Arquitectura. Todos los derechos reservados.</p>
+    <div class="footer-social">
+      <a href="https://www.instagram.com/cuerposarq/" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+        </svg>
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    menuToggle.addEventListener('click', () => {
+      menuToggle.classList.toggle('open');
+      navLinks.classList.toggle('open');
+    });
+    function closeMenu() {
+      menuToggle.classList.remove('open');
+      navLinks.classList.remove('open');
+    }
+
+    // Navbar on scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Reveal on scroll
+    const revealEls = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => obs.observe(el));
+
+    // Smooth parallax on hero
+    window.addEventListener('scroll', () => {
+      const hero = document.querySelector('.hero-bg');
+      if (hero) hero.style.transform = `translateY(${window.scrollY * 0.3}px)`;
+    });
+  </script>
+
+</body>
+</html>
